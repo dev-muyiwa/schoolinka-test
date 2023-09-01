@@ -1,6 +1,7 @@
 import {Sequelize} from "sequelize-typescript";
 import {config} from "./config";
 import User from "../models/user.model";
+import Blog from "../models/blog.model";
 
 
 export const dbSetup = async () => {
@@ -11,7 +12,7 @@ export const dbSetup = async () => {
         database: config.dbName,
         username: config.dbUser,
         password: config.dbPassword,
-        models: [User],
+        models: [User, Blog],
         logging: false
     });
 

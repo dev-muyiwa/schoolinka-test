@@ -1,14 +1,18 @@
 import express, {Router} from "express";
 import BlogController from "../controllers/blog.controller";
+import {checkAuthorizationToken} from "../middlewares/authHandler";
 
 const blogRouter: Router = express.Router();
 const blogController = new BlogController();
 
 // Add auth middleware
+blogRouter.use(checkAuthorizationToken)
 
 blogRouter.route("/")
     .get(blogController.getAllBlogs)
     .post(blogController.createBlog);
+
+blogRouter.get("/drafts", blogController.getDrafts);
 
 blogRouter.route("/:blogId")
     .get(blogController.getBlog)

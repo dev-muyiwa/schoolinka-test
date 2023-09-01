@@ -1,15 +1,16 @@
-import {Column, DataType, Model, Table} from "sequelize-typescript";
+import {Column, DataType, HasMany, Model, Table} from "sequelize-typescript";
+import Blog from "./blog.model";
 
 @Table
 class User extends Model {
     @Column({
-        type: DataType.STRING,
+        type: DataType.STRING(20),
         allowNull: false
     })
     firstName!: string;
 
     @Column({
-        type: DataType.STRING,
+        type: DataType.STRING(20),
         allowNull: false
     })
     lastName!: string;
@@ -31,6 +32,9 @@ class User extends Model {
         type: DataType.STRING
     })
     refreshToken: string;
+
+    @HasMany(() => Blog, "authorId")
+    blogs!: Blog[]
 }
 
 

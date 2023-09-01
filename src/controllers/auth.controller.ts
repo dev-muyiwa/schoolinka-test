@@ -5,6 +5,7 @@ import {CustomError} from "../utils/CustomError";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import {config} from "../config/config";
+import userModel from "../models/user.model";
 
 class AuthController {
     async register(req: Request, res: Response) {
@@ -35,15 +36,15 @@ class AuthController {
             const existingUser: User | null = await User.findOne({where: {email: email}});
 
             if (!existingUser || !await bcrypt.compare(password, existingUser.password)) {
-                throw new CustomError("An account exists with this email/mobile.", CustomError.BAD_REQUEST);
+                throw new CustomError("An account exists with this email/mobile", CustomError.BAD_REQUEST);
             }
 
-            const refreshToken: string = existingUser.refreshToken ? existingUser.refreshToken : jwt.sign({
+            const refreshToken: string = existingUser.refreshToken ?? jwt.sign({
                 name: existingUser.firstName + ' ' + existingUser.lastName,
                 email: existingUser.email
-            }, config.jwt_refresh_secret, {expiresIn: "7d", subject: existingUser.id})
+            }, config.jwt_refresh_secret, {expiresIn: "7d", subject: `${existingUser.id}`})
 
-            if (!refreshToken || !jwt.verify(existingUser.refreshToken, config.jwt_refresh_secret)) {
+            if (!existingUser.refreshToken) {
                 existingUser.refreshToken = refreshToken
                 await existingUser.save();
             }
@@ -51,7 +52,7 @@ class AuthController {
             const accessToken: string = jwt.sign({
                 name: existingUser.firstName + ' ' + existingUser.lastName,
                 email: existingUser.email
-            }, config.jwt_access_secret, {expiresIn: "30m", subject: existingUser.id});
+            }, config.jwt_access_secret, {expiresIn: "30m", subject: `${existingUser.id}`});
 
             return sendSuccessResponse(res, {
                 accessToken: accessToken,

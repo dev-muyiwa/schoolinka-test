@@ -1,9 +1,10 @@
-import {Column, DataType, Default, Model, Table} from "sequelize-typescript";
+import {BelongsTo, Column, DataType, Default, ForeignKey, Model, Table} from "sequelize-typescript";
+import User from "./user.model";
 
 @Table
 class Blog extends Model {
     @Column({
-        type: DataType.STRING,
+        type: DataType.STRING(64),
         allowNull: false
     })
     title!: string;
@@ -15,23 +16,30 @@ class Blog extends Model {
     description: string;
 
     @Column({
-        type: DataType.STRING,
+        type: DataType.TEXT({length: "long"}),
         allowNull: false
     })
     content!: string;
 
+    @Default(0)
     @Column({
-        type: DataType.NUMBER,
+        type: DataType.INTEGER,
         allowNull: false
     })
-    @Default(0)
     views: number;
 
+    @Default(false)
     @Column({
         type: DataType.BOOLEAN,
     })
-    @Default(false)
     isDraft: boolean;
+
+    @ForeignKey(() => User)
+    @Column
+    authorId!: number;
+
+    @BelongsTo(() => User, "authorId")
+    author!: User;
 }
 
 export default Blog
