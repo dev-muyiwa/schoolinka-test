@@ -21,3 +21,5 @@ The Schoolinka Blogging API empowers users to perform CRUD (Create, Read, Update
 ## **Documentation**
 
 Link to Postman collection can be found here: [documentation](https://elements.getpostman.com/redirect?entityId=27609993-c74231f4-d8ae-44d6-acce-d0336efce04b&entityType=collection)
+
+Link to Railway deployment: [hosting service](https://schoolinka-test-production.up.railway.app/)
