@@ -26,6 +26,7 @@ class UserController {
     async getDrafts(req: AuthenticatedRequest, res: Response) {
         try {
             const {userId} = req.params
+
             if (userId != req.user?.id) {
                 throw new CustomError("Unable to get drafts", CustomError.FORBIDDEN);
             }
