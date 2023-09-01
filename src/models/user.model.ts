@@ -37,17 +37,18 @@ class User extends Model {
     password!: string;
 
     @Column({
-        type: DataType.STRING
+        type: DataType.STRING,
+        allowNull: true
     })
-    refreshToken: string;
+    refreshToken!: string | null;
 
     @HasMany(() => Blog, "authorId")
     blogs!: Blog[]
 
 
     getBasicInfo(): object {
-        const {firstName, lastName, email} = this
-        return {firstName, lastName, email};
+        const {id, firstName, lastName, email} = this
+        return {id, firstName, lastName, email};
     }
 }
 

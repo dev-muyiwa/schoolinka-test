@@ -5,7 +5,7 @@ import {checkAuthorizationToken} from "../middlewares/authHandler";
 const blogRouter: Router = express.Router();
 const blogController = new BlogController();
 
-// Add auth middleware
+
 blogRouter.use(checkAuthorizationToken)
 
 blogRouter.route("/")

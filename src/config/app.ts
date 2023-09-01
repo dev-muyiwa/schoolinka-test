@@ -1,8 +1,8 @@
 import express, {Application} from "express";
-import authRouter from "../routes/authRoutes";
-import userRouter from "../routes/userRoutes";
+import authRouter from "../routes/auth.route";
+import userRouter from "../routes/user.route";
 import {apiErrorHandler, routeNotFound} from "../middlewares/errorHandler";
-import blogRouter from "../routes/blogRoutes";
+import blogRouter from "../routes/blog.route";
 
 const app: Application = express();
 

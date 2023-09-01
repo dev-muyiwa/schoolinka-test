@@ -14,7 +14,7 @@ class AuthController {
             const existingUser: User | null = await User.findOne({where: {email: email}});
 
             if (existingUser) {
-                throw new CustomError("An account exists with this email/mobile.", CustomError.BAD_REQUEST);
+                throw new CustomError("An account exists with this email", CustomError.BAD_REQUEST);
             }
 
             const user: User = await User.create({
@@ -42,9 +42,9 @@ class AuthController {
             const refreshToken: string = existingUser.refreshToken ?? jwt.sign({
                 name: existingUser.firstName + ' ' + existingUser.lastName,
                 email: existingUser.email
-            }, config.jwt_refresh_secret, {expiresIn: "7d", subject: `${existingUser.id}`})
+            }, config.jwt_refresh_secret, {expiresIn: "7d", subject: existingUser.id})
 
-            if (!existingUser.refreshToken) {
+            if (!existingUser.refreshToken || existingUser.refreshToken === "") {
                 existingUser.refreshToken = refreshToken
                 await existingUser.save();
             }
@@ -52,7 +52,7 @@ class AuthController {
             const accessToken: string = jwt.sign({
                 name: existingUser.firstName + ' ' + existingUser.lastName,
                 email: existingUser.email
-            }, config.jwt_access_secret, {expiresIn: "30m", subject: `${existingUser.id}`});
+            }, config.jwt_access_secret, {expiresIn: "30m", subject: existingUser.id});
 
             return sendSuccessResponse(res, {
                 accessToken: accessToken,

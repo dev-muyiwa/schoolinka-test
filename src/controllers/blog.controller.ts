@@ -4,6 +4,7 @@ import User from "../models/user.model";
 import {CustomError} from "../utils/CustomError";
 import {AuthenticatedRequest} from "../middlewares/authHandler";
 import {sendErrorResponse, sendSuccessResponse} from "../utils/ResponseHandlers";
+import {Op} from "sequelize";
 
 class BlogController {
     async createBlog(req: AuthenticatedRequest, res: Response) {
@@ -28,14 +29,12 @@ class BlogController {
     async getBlog(req: AuthenticatedRequest, res: Response) {
         try {
             const {blogId} = req.params;
-            const blog: Blog | null = await Blog.findByPk(blogId, {
-                include: [User],
-            });
+            const blog: Blog | null = await Blog.findByPk(blogId);
             if (!blog) {
                 throw new CustomError("Blog does not exist")
             }
 
-            if (blog.author.id !== req.user!!.id) {
+            if (blog.authorId !== req.user!!.id) {
                 blog.views += 1;
                 await blog.save();
             }
@@ -48,18 +47,37 @@ class BlogController {
 
     async getAllBlogs(req: Request, res: Response) {
         try {
-            // Paginate the list
-            // To shuffle the list or not too?
-            const blogs: Blog[] = await Blog.findAll({where: {isDraft: false}});
+            const searchQuery = req.query.q || ""
+            const currentPage: number = Number(req.query.page) || 1;
+            const perPage: number = 10;
+            const offset: number = (currentPage - 1) * perPage;
 
-            return sendSuccessResponse(res, blogs, "All blogs fetched");
+            const blogs = await Blog.findAndCountAll({
+                where: {
+                    isDraft: false,
+                    [Op.or]: [
+                        {
+                            title: {[Op.iLike]: `%${searchQuery}%`}
+                        },
+                        {
+                            description: {[Op.iLike]: `%${searchQuery.toString()}%`}
+                        }
+                    ]
+                },
+                limit: perPage,
+                offset: offset,
+            });
+            const data = {
+                currentPage: currentPage,
+                blogs: blogs.rows,
+                perPage: perPage,
+                totalPages: Math.ceil(blogs.count / perPage)
+            }
+
+            return sendSuccessResponse(res, data, "Blogs fetched");
         } catch (err) {
             return sendErrorResponse(res, err)
         }
-    }
-
-    async searchBlogs(req: Request, res: Response) {
-
     }
 
     async updateBlog(req: AuthenticatedRequest, res: Response) {
