@@ -2,6 +2,13 @@
 
 The Schoolinka Blogging API empowers users to perform CRUD (Create, Read, Update, Delete) operations on blogs. This API simplifies the process of managing and interacting with blog data. Below is an overview of the available endpoints and their functionalities.
 
+## **Technologies**
+- Typescript
+- Node.js + Express.js
+- PostgresDB
+- Sequelize ORM
+
+
 ## **Overview of Endpoints**
 
 - **Authentication:** Handle user registration, login, and logout securely. Obtain authentication tokens for accessing protected endpoints.
