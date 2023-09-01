@@ -4,7 +4,7 @@ import {sendErrorResponse} from "../utils/ResponseHandlers";
 
 
 const routeNotFound = (req: Request, res: Response, next: NextFunction): void => {
-    const error = new CustomError(`Not found: ${req.url}`);
+    const error = new CustomError(`Not found: ${req.originalUrl}`);
     sendErrorResponse(res, error);
 }
 
