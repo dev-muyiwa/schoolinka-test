@@ -1,8 +1,16 @@
-import {Column, DataType, HasMany, Model, Table} from "sequelize-typescript";
+import {Column, DataType, HasMany, Model, PrimaryKey, Table} from "sequelize-typescript";
 import Blog from "./blog.model";
+import {ulid} from "ulid";
 
 @Table
 class User extends Model {
+    @PrimaryKey
+    @Column({
+        type: DataType.STRING,
+        defaultValue: () => ulid(),
+    })
+    id!: string;
+
     @Column({
         type: DataType.STRING(20),
         allowNull: false
@@ -35,6 +43,12 @@ class User extends Model {
 
     @HasMany(() => Blog, "authorId")
     blogs!: Blog[]
+
+
+    getBasicInfo(): object {
+        const {firstName, lastName, email} = this
+        return {firstName, lastName, email};
+    }
 }
 
 

@@ -12,8 +12,6 @@ blogRouter.route("/")
     .get(blogController.getAllBlogs)
     .post(blogController.createBlog);
 
-blogRouter.get("/drafts", blogController.getDrafts);
-
 blogRouter.route("/:blogId")
     .get(blogController.getBlog)
     .put(blogController.updateBlog)

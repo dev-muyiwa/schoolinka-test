@@ -24,7 +24,7 @@ class AuthController {
                 password: await bcrypt.hash(password, 13)
             });
 
-            return sendSuccessResponse(res, user, "Registration successful", 201);
+            return sendSuccessResponse(res, user.getBasicInfo(), "Registration successful", 201);
         } catch (err) {
             return sendErrorResponse(res, err);
         }

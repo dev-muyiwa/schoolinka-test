@@ -58,24 +58,6 @@ class BlogController {
         }
     }
 
-    async getDrafts(req: AuthenticatedRequest, res: Response) {
-        try {
-            const user = await User.findByPk(req.user?.id, {
-                include: [{
-                    model: Blog,
-                    as: "blogs",
-                    where: {isDraft: true}
-                }]
-            });
-
-            const drafts = user ? user.blogs : [];
-
-            return sendSuccessResponse(res, drafts, "Drafts fetched");
-        } catch (err) {
-            return sendErrorResponse(res, err);
-        }
-    }
-
     async searchBlogs(req: Request, res: Response) {
 
     }

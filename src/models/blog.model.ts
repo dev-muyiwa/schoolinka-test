@@ -1,8 +1,16 @@
-import {BelongsTo, Column, DataType, Default, ForeignKey, Model, Table} from "sequelize-typescript";
+import {BelongsTo, Column, DataType, Default, ForeignKey, Model, PrimaryKey, Table} from "sequelize-typescript";
 import User from "./user.model";
+import {ulid} from "ulid";
 
 @Table
 class Blog extends Model {
+    @PrimaryKey
+    @Column({
+        type: DataType.STRING,
+        defaultValue: () => ulid(),
+    })
+    id!: string;
+
     @Column({
         type: DataType.STRING(64),
         allowNull: false
@@ -36,7 +44,7 @@ class Blog extends Model {
 
     @ForeignKey(() => User)
     @Column
-    authorId!: number;
+    authorId!: string;
 
     @BelongsTo(() => User, "authorId")
     author!: User;
