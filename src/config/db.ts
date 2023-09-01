@@ -5,7 +5,7 @@ import Blog from "../models/blog.model";
 
 
 export const dbSetup = async () => {
-    const sequelize = new Sequelize({
+    const sequelize: Sequelize = new Sequelize({
         dialect: "postgres",
         host: config.dbHost,
         port: config.dbPort,

@@ -3,7 +3,9 @@ import dotenv from "dotenv";
 
 dotenv.config();
 export const config = {
-    port: process.env.PORT ? Number(process.env.PORT): 8000,
+    port: process.env.PORT ? Number(process.env.PORT): 3000,
+
+    bcrypt_rounds: process.env.ROUNDS || 13,
 
     dbHost: process.env.DB_HOST || "localhost",
     dbPort: process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432,

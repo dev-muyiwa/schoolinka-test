@@ -1,13 +1,8 @@
-import {Request, Response} from "express";
+import {Response} from "express";
 import {CustomError} from "./CustomError";
 
 
-// interface AuthenticatedRequest extends Request  {
-//     user?: UserDocument
-// }
-
-
-const errorResponse = (res: Response, error: any, message: string, code: number = 400): Response => {
+const errorResponse = (res: Response, error: any, message: string, code: number = CustomError.BAD_REQUEST): Response => {
     return res.status(code).json({success: false, error: error, message: message});
 }
 

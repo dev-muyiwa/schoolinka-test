@@ -6,12 +6,13 @@ import {sendErrorResponse, sendSuccessResponse} from "../utils/ResponseHandlers"
 import {CustomError} from "../utils/CustomError";
 import jwt, {JwtPayload} from "jsonwebtoken";
 import {config} from "../config/config";
+import bcrypt from "bcrypt";
 
 class UserController {
-    async getUser(req: Request, res: Response) {
+    async getUser(req: Request, res: Response): Promise<Response> {
         try {
             const {userId} = req.params;
-            const user: User|null = await User.findByPk(userId);
+            const user: User | null = await User.findByPk(userId);
 
             if (!user) {
                 throw new CustomError("User does not exist")
@@ -23,14 +24,60 @@ class UserController {
         }
     }
 
-    async getDrafts(req: AuthenticatedRequest, res: Response) {
+    async updateProfile(req: AuthenticatedRequest, res: Response): Promise<Response> {
+        try {
+            const {firstName, lastName, email} = req.body;
+            const {userId} = req.params;
+            const user = req.user as User;
+            if (userId !== user.id) {
+                throw new CustomError("Unable to update profile", CustomError.FORBIDDEN);
+            }
+
+            user.firstName = firstName ?? user.firstName;
+            user.lastName = lastName ?? user.lastName;
+            user.email = email ?? user.email;
+            await user.save();
+
+            return sendSuccessResponse(res, user.getBasicInfo(), "Profile updated");
+        } catch (err) {
+            return sendErrorResponse(res, err);
+        }
+    }
+
+    async updatePassword(req: AuthenticatedRequest, res: Response): Promise<Response> {
+        try {
+            const {currentPassword, newPassword} = req.body;
+            const {userId} = req.params;
+            const user = req.user as User;
+            if (userId !== user.id) {
+                throw new CustomError("Unable to update profile", CustomError.FORBIDDEN);
+            }
+
+            if (!await bcrypt.compare(currentPassword, user.password)) {
+                throw new CustomError("Old password doesn't match current password", CustomError.BAD_REQUEST);
+            }
+
+            if (currentPassword === newPassword) {
+                throw new CustomError("Current password cannot be the same as new password", CustomError.BAD_REQUEST);
+            }
+
+            user.password = await bcrypt.hash(newPassword, config.bcrypt_rounds);
+            await user.save();
+
+            return sendSuccessResponse(res, user.getBasicInfo(), "Password updated");
+        } catch (err) {
+            return sendErrorResponse(res, err);
+        }
+    }
+
+    async getDrafts(req: AuthenticatedRequest, res: Response): Promise<Response> {
         try {
             const {userId} = req.params
 
             if (userId != req.user?.id) {
                 throw new CustomError("Unable to get drafts", CustomError.FORBIDDEN);
             }
-            const user: User|null = await User.findByPk(userId, {
+            const user: User | null = await User.findByPk(userId, {
                 include: [{
                     model: Blog,
                     as: "blogs",
@@ -46,7 +93,7 @@ class UserController {
         }
     }
 
-    async generateAccessToken(req: Request, res: Response) {
+    async generateAccessToken(req: Request, res: Response): Promise<Response> {
         try {
             const {refreshToken} = req.body;
             const {userId} = req.params;
@@ -70,7 +117,7 @@ class UserController {
         }
     }
 
-    async logout(req: AuthenticatedRequest, res: Response) {
+    async logout(req: AuthenticatedRequest, res: Response): Promise<Response> {
         try {
             const {userId} = req.params;
 
@@ -82,7 +129,8 @@ class UserController {
             await req.user.save();
 
             return sendSuccessResponse(res, null, "Logged out")
-;        } catch (err) {
+                ;
+        } catch (err) {
             return sendErrorResponse(res, err);
         }
     }

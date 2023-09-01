@@ -7,9 +7,8 @@ import {sendErrorResponse, sendSuccessResponse} from "../utils/ResponseHandlers"
 import {Op} from "sequelize";
 
 class BlogController {
-    async createBlog(req: AuthenticatedRequest, res: Response) {
+    async createBlog(req: AuthenticatedRequest, res: Response): Promise<Response> {
         try {
-            // Add image path.
             const {title, description, content, isDraft} = req.body;
 
             const blog = await Blog.create({
@@ -26,7 +25,7 @@ class BlogController {
         }
     }
 
-    async getBlog(req: AuthenticatedRequest, res: Response) {
+    async getBlog(req: AuthenticatedRequest, res: Response): Promise<Response> {
         try {
             const {blogId} = req.params;
             const blog: Blog | null = await Blog.findByPk(blogId);
@@ -45,7 +44,7 @@ class BlogController {
         }
     }
 
-    async getAllBlogs(req: Request, res: Response) {
+    async getAllBlogs(req: Request, res: Response): Promise<Response> {
         try {
             const searchQuery = req.query.q || ""
             const currentPage: number = Number(req.query.page) || 1;
@@ -80,7 +79,7 @@ class BlogController {
         }
     }
 
-    async updateBlog(req: AuthenticatedRequest, res: Response) {
+    async updateBlog(req: AuthenticatedRequest, res: Response): Promise<Response> {
         try {
             const {title, description, content} = req.body;
             const {blogId} = req.params;
@@ -106,7 +105,7 @@ class BlogController {
         }
     }
 
-    async deleteBlog(req: AuthenticatedRequest, res: Response) {
+    async deleteBlog(req: AuthenticatedRequest, res: Response): Promise<Response> {
         try {
             const {blogId} = req.params;
             const blog: Blog | null = await Blog.findByPk(blogId);

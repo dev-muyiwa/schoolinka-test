@@ -1,16 +1,19 @@
 import express, {Router} from "express";
 import BlogController from "../controllers/blog.controller";
-import {checkAuthorizationToken} from "../middlewares/authHandler";
+import {checkAuthorizationToken, checkValidationErrors} from "../middlewares/authHandler";
+import {check} from "express-validator";
 
 const blogRouter: Router = express.Router();
-const blogController = new BlogController();
+const blogController: BlogController = new BlogController();
 
 
 blogRouter.use(checkAuthorizationToken)
 
 blogRouter.route("/")
     .get(blogController.getAllBlogs)
-    .post(blogController.createBlog);
+    .post(check("title").notEmpty(),
+        check("content").notEmpty(),
+        checkValidationErrors, blogController.createBlog);
 
 blogRouter.route("/:blogId")
     .get(blogController.getBlog)

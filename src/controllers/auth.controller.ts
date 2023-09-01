@@ -8,7 +8,7 @@ import {config} from "../config/config";
 import userModel from "../models/user.model";
 
 class AuthController {
-    async register(req: Request, res: Response) {
+    async register(req: Request, res: Response): Promise<Response> {
         try {
             const {firstName, lastName, email, password} = req.body;
             const existingUser: User | null = await User.findOne({where: {email: email}});
@@ -21,7 +21,7 @@ class AuthController {
                 firstName: firstName,
                 lastName: lastName,
                 email: email,
-                password: await bcrypt.hash(password, 13)
+                password: await bcrypt.hash(password, config.bcrypt_rounds)
             });
 
             return sendSuccessResponse(res, user.getBasicInfo(), "Registration successful", 201);
@@ -30,13 +30,13 @@ class AuthController {
         }
     }
 
-    async login(req: Request, res: Response) {
+    async login(req: Request, res: Response): Promise<Response> {
         try {
             const {email, password} = req.body;
             const existingUser: User | null = await User.findOne({where: {email: email}});
 
             if (!existingUser || !await bcrypt.compare(password, existingUser.password)) {
-                throw new CustomError("An account exists with this email/mobile", CustomError.BAD_REQUEST);
+                throw new CustomError("An account exists with this email", CustomError.BAD_REQUEST);
             }
 
             const refreshToken: string = existingUser.refreshToken ?? jwt.sign({
