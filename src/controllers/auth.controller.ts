@@ -36,7 +36,7 @@ class AuthController {
             const existingUser: User | null = await User.findOne({where: {email: email}});
 
             if (!existingUser || !await bcrypt.compare(password, existingUser.password)) {
-                throw new CustomError("An account exists with this email", CustomError.BAD_REQUEST);
+                throw new CustomError("Invalid login credentials", CustomError.BAD_REQUEST);
             }
 
             const refreshToken: string = existingUser.refreshToken ?? jwt.sign({
