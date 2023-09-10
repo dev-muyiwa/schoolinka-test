@@ -9,10 +9,15 @@ import {config} from "../config/config";
 import bcrypt from "bcrypt";
 
 class UserController {
-    async getUser(req: Request, res: Response): Promise<Response> {
+    async getUser(req: AuthenticatedRequest, res: Response): Promise<Response> {
         try {
             const {userId} = req.params;
-            const user: User | null = await User.findByPk(userId);
+            let user: User | null;
+            if (userId === "me") {
+                user = req.user!
+            } else {
+                user = await User.findByPk(userId);
+            }
 
             if (!user) {
                 throw new CustomError("User does not exist")
